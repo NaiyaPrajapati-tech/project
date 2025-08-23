@@ -2,67 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Password Strength Checker</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 30px;
-      background-color: #f4f4f4;
-    }
-    .container {
-      max-width: 400px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      font-size: 16px;
-    }
-    .strength {
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    .weak { color: red; }
-    .medium { color: orange; }
-    .strong { color: green; }
-  </style>
+  <title>Simple Navbar Page</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h2>Password Strength Checker</h2>
-    <input type="password" id="password" placeholder="Enter your password" onkeyup="checkStrength()">
-    <div id="strengthMessage" class="strength"></div>
-  </div>
+  <header>
+    <div class="navbar">
+      <div class="logo"> <span style="color:red">L</span><span style="color:green">o</span><span style="color:blue">g</span><span style="color:orange">o</span> </div>
+      
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Services</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </nav>
 
-  <script>
-    function checkStrength() {
-      const password = document.getElementById("password").value;
-      const strengthMessage = document.getElementById("strengthMessage");
-
-      let strength = 0;
-      if (password.length >= 8) strength++;
-      if (/[A-Z]/.test(password)) strength++;
-      if (/[0-9]/.test(password)) strength++;
-      if (/[^A-Za-z0-9]/.test(password)) strength++;
-
-      if (password.length === 0) {
-        strengthMessage.textContent = "";
-      } else if (strength <= 1) {
-        strengthMessage.textContent = "Weak Password";
-        strengthMessage.className = "strength weak";
-      } else if (strength === 2 || strength === 3) {
-        strengthMessage.textContent = "Medium Password";
-        strengthMessage.className = "strength medium";
-      } else {
-        strengthMessage.textContent = "Strong Password";
-        strengthMessage.className = "strength strong";
-      }
-    }
-  </script>
+      <div class="auth-buttons">
+        <button class="login">Login</button>
+        <button class="register">Register</button>
+      </div>
+    </div>
+  </header>
 </body>
 </html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Form</title>
+</head>
+<body>
+
+  <form action="https://api.web3forms.com/submit" method="POST">
+    <!-- Replace with your Web3Forms Access Key -->
+    <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE" />
+
+    <label>First Name:</label>
+    <input type="text" name="First_name" required /><br /><br />
+
+    <label>Last Name:</label>
+    <input type="text" name="Last_name" required /><br /><br />
+
+    <label>Email:</label>
+    <input type="email" name="Email_id" required /><br /><br />
+
+    <label>Contact:</label>
+    <input type="tel" name="Contact" required /><br /><br />
+
+    <label>Gender:</label>
+    <select name="Gender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select><br /><br />
+
+    <label>Hobbies:</label>
+    <input type="checkbox" name="Hobbies[]" value="reading" /> Reading
+    <input type="checkbox" name="Hobbies[]" value="travel" /> Travel
+    <input type="checkbox" name="Hobbies[]" value="sports" /> Sports<br /><br />
+
+    <label>Select Date:</label>
+    <input type="date" name="Select_date" /><br /><br />
+
+    <label>Favorite Color:</label>
+    <input type="color" name="Fav_color" /><br /><br />
+
+    <label>Age:</label>
+    <select name="Age">
+      <option value="below_18">Below 18</option>
+      <option value="above_18">Above 18</option>
+    </select><br /><br />
+
+    <button type="submit">Submit</button>
+  </form>
+
+</body>
+</html>

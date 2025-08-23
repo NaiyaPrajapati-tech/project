@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Joke Generator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(120deg, #FFDEE9, #B5FFFC);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+    }
+    .container {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    h2 {
+        margin-bottom: 15px;
+    }
+    .joke {
+        font-size: 1.1em;
+        margin-top: 15px;
+        color: #333;
+        min-height: 60px;
+    }
+    button {
+        padding: 10px 20px;
+        margin-top: 15px;
+        background: #ff6f61;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 1em;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #e65c50;
+    }
+    @media (max-width: 500px) {
+        .container {
+            padding: 15px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>😂 Random Joke Generator</h2>
+    <div class="joke" id="joke">Click the button to get a joke!</div>
+    <button onclick="getJoke()">Get Joke</button>
+</div>
+
+<script>
+async function getJoke() {
+    const jokeDiv = document.getElementById("joke");
+    jokeDiv.textContent = "Loading joke... 😂";
+
+    try {
+        let response = await fetch("https://v2.jokeapi.dev/joke/Any?type=single");
+        let data = await response.json();
+        jokeDiv.textContent = data.joke;
+    } catch (error) {
+        jokeDiv.textContent = "Oops! Couldn't fetch a joke.";
+    }
+}
+</script>
+
+</body>
+</html>

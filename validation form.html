@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Form Validation</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+    form {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+    input, select, textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    input:focus, select:focus, textarea:focus {
+        border-color: #007BFF;
+        outline: none;
+    }
+    .error {
+        color: red;
+        font-size: 0.85em;
+    }
+    button {
+        margin-top: 15px;
+        padding: 10px;
+        width: 100%;
+        background: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #0056b3;
+    }
+</style>
+</head>
+<body>
+
+<form id="registrationForm" novalidate>
+    <h2>Registration Form</h2>
+
+    <label>Full Name:</label>
+    <input type="text" id="fullname" required>
+    <div class="error" id="fullnameError"></div>
+
+    <label>Email Address:</label>
+    <input type="email" id="email" required>
+    <div class="error" id="emailError"></div>
+
+    <label>Contact Number:</label>
+    <input type="tel" id="contact" required>
+    <div class="error" id="contactError"></div>
+
+    <label>Password:</label>
+    <input type="password" id="password" required>
+    <div class="error" id="passwordError"></div>
+
+    <label>Confirm Password:</label>
+    <input type="password" id="confirmPassword" required>
+    <div class="error" id="confirmPasswordError"></div>
+
+    <label>City:</label>
+    <input type="text" id="city" required>
+    <div class="error" id="cityError"></div>
+
+    <label>Country:</label>
+    <select id="country" required>
+        <option value="">Select Country</option>
+        <option>India</option>
+        <option>USA</option>
+        <option>UK</option>
+        <option>Australia</option>
+        <option>Canada</option>
+    </select>
+    <div class="error" id="countryError"></div>
+
+    <label>Additional Notes:</label>
+    <textarea id="notes" rows="3"></textarea>
+
+    <button type="submit">Register</button>
+</form>
+
+<script>
+document.getElementById("registrationForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    let isValid = true;
+
+    // Reset errors
+    document.querySelectorAll(".error").forEach(el => el.textContent = "");
+
+    // Full Name Validation
+    let fullname = document.getElementById("fullname").value.trim();
+    if (!/^[A-Za-z\s]{3,}$/.test(fullname)) {
+        document.getElementById("fullnameError").textContent = "Full Name must be at least 3 letters, no numbers.";
+        isValid = false;
+    }
+
+    // Email Validation
+    let email = document.getElementById("email").value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById("emailError").textContent = "Enter a valid email address.";
+        isValid = false;
+    }
+
+    // Contact Number Validation
+    let contact = document.getElementById("contact").value.trim();
+    if (!/^\d{10,15}$/.test(contact)) {
+        document.getElementById("contactError").textContent = "Contact must be 10-15 digits.";
+        isValid = false;
+    }
+
+    // Password Validation
+    let password = document.getElementById("password").value;
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
+        document.getElementById("passwordError").textContent = "Password must be 8+ chars, include upper, lower, number, special char.";
+        isValid = false;
+    }
+
+    // Confirm Password
+    let confirmPassword = document.getElementById("confirmPassword").value;
+    if (confirmPassword !== password) {
+        document.getElementById("confirmPasswordError").textContent = "Passwords do not match.";
+        isValid = false;
+    }
+
+    // City Validation
+    let city = document.getElementById("city").value.trim();
+    if (city.length < 2) {
+        document.getElementById("cityError").textContent = "Enter a valid city.";
+        isValid = false;
+    }
+
+    // Country Validation
+    let country = document.getElementById("country").value;
+    if (country === "") {
+        document.getElementById("countryError").textContent = "Please select a country.";
+        isValid = false;
+    }
+
+    if (isValid) {
+        alert("Form submitted successfully!");
+        this.reset();
+    }
+});
+</script>
+
+</body>
+</html>

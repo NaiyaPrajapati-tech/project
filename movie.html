@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Movie Search App</title>
+<meta name="description" content="Search movies, see details and get a random pick (TMDb API)" />
+<style>
+  :root{
+    --bg1:#0f172a; --card:#0b1220; --accent:#ff6b6b; --muted:#94a3b8; --glass: rgba(255,255,255,0.04);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; background: linear-gradient(180deg,#071024 0%, #0b1220 100%);
+    color:#e6eef8; min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:28px;
+  }
+  .app {
+    width:100%; max-width:980px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px; padding:18px; box-shadow: 0 10px 40px rgba(2,6,23,0.7);
+    backdrop-filter: blur(6px);
+  }
+
+  header { display:flex; gap:12px; align-items:center; margin-bottom:14px; }
+  header h1 { margin:0; font-size:1.2rem; letter-spacing:0.2px; }
+  .searchBar { flex:1; display:flex; gap:8px; }
+  input[type="search"]{
+    flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);
+    background:var(--glass); color:inherit; font-size:0.95rem;
+  }
+  button { padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:600; }
+  .btn-primary { background:linear-gradient(90deg,var(--accent), #ff8a8a); color:#081426; }
+  .btn-ghost { background:transparent; border:1px solid rgba(255,255,255,0.04); color:var(--muted); }
+
+  .main {
+    display:grid; grid-template-columns: 1fr 360px; gap:16px;
+  }
+
+  /* Results list */
+  .results { padding:12px; display:grid; gap:12px; }
+  .card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:10px; padding:10px; display:flex; gap:12px; align-items:flex-start; border:1px solid rgba(255,255,255,0.02);
+  }
+  .poster { width:72px; min-width:72px; height:108px; background:#081426; border-radius:6px; overflow:hidden; display:flex;align-items:center;justify-content:center;}
+  .poster img{width:100%; height:100%; object-fit:cover;}
+  .meta { flex:1; }
+  .title { font-weight:700; margin:0; font-size:0.98rem; }
+  .sub { font-size:0.85rem; color:var(--muted); margin-top:6px; display:flex; gap:8px; flex-wrap:wrap; }
+  .actions { margin-top:8px; display:flex; gap:8px; }
+
+  /* Details panel */
+  .details { padding:14px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); min-height:220px; border:1px solid rgba(255,255,255,0.02); }
+  .details h2 { margin:0 0 8px 0; }
+  .overview { color:var(--muted); font-size:0.95rem; margin-top:10px; }
+
+  /* Empty / loading */
+  .placeholder { padding:28px; text-align:center; color:var(--muted); }
+
+  /* Responsive */
+  @media (max-width:900px){
+    .main { grid-template-columns: 1fr; }
+    .details { order:2; }
+  }
+</style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="Movie search application">
+    <header>
+      <h1>🎬 Movie Search</h1>
+      <div class="searchBar">
+        <input id="query" type="search" placeholder="Search movies by title (e.g. Inception)" aria-label="Search movies" />
+        <button id="searchBtn" class="btn-primary">Search</button>
+        <button id="randomBtn" class="btn-ghost" title="Get a random trending movie">Random</button>
+      </div>
+    </header>
+
+    <div class="main">
+      <div class="results" id="results" aria-live="polite">
+        <div class="placeholder" id="startMsg">Type a movie title and click Search, or click Random to discover a movie.</div>
+      </div>
+
+      <aside class="details" id="detailsPanel" aria-live="polite">
+        <div class="placeholder">Movie details will appear here when you select a result.</div>
+      </aside>
+    </div>
+  </div>
+
+<script>
+/**
+ * Movie Search App (TMDb)
+ * Replace TMDB_API_KEY with your TMDb API key.
+ * Docs: https://developer.themoviedb.org/docs/getting-started
+ * Search endpoint: /search/movie
+ * Details endpoint: /movie/{movie_id}
+ */
+
+const TMDB_API_KEY = 'YOUR_TMDB_API_KEY'; // <-- PUT YOUR KEY HERE
+const TMDB_BASE = 'https://api.themoviedb.org/3';
+const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w342'; // poster size
+
+// Elements
+const queryInput = document.getElementById('query');
+const searchBtn = document.getElementById('searchBtn');
+const randomBtn = document.getElementById('randomBtn');
+const resultsEl = document.getElementById('results');
+const detailsEl = document.getElementById('detailsPanel');
+const startMsg = document.getElementById('startMsg');
+
+async function safeFetch(url, opts = {}) {
+  try {
+    const res = await fetch(url, opts);
+    if (!res.ok) {
+      const text = await res.text().catch(()=>null);
+      throw new Error('Network response not ok: ' + (res.status + ' ' + res.statusText) + (text ? ' — ' + text : ''));
+    }
+    return await res.json();
+  } catch (err) {
+    throw err;
+  }
+}
+
+function showError(container, message) {
+  container.innerHTML = `<div class="placeholder" style="color:#ffb4b4">Error: ${escapeHtml(message)}</div>`;
+}
+
+/* SEARCH */
+searchBtn.addEventListener('click', () => performSearch());
+queryInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
+
+async function performSearch(page = 1) {
+  const q = queryInput.value.trim();
+  if (!q) {
+    resultsEl.innerHTML = `<div class="placeholder">Please enter a movie title to search.</div>`;
+    return;
+  }
+  resultsEl.innerHTML = `<div class="placeholder">Searching for "${escapeHtml(q)}" ...</div>`;
+  detailsEl.innerHTML = `<div class="placeholder">Select a movie to see details.</div>`;
+
+  const url = `${TMDB_BASE}/search/movie?api_key=${encodeURIComponent(TMDB_API_KEY)}&query=${encodeURIComponent(q)}&page=${page}&include_adult=false`;
+  try {
+    const data = await safeFetch(url);
+    if (!data || !data.results || data.results.length === 0) {
+      resultsEl.innerHTML = `<div class="placeholder">No results for "${escapeHtml(q)}". Try another title.</div>`;
+      return;
+    }
+    renderResults(data.results);
+  } catch (err) {
+    console.error(err);
+    showError(resultsEl, err.message || 'Failed to fetch search results.');
+  }
+}
+
+/* RENDER SEARCH RESULTS */
+function renderResults(items) {
+  resultsEl.innerHTML = '';
+  for (const item of items) {
+    const poster = item.poster_path ? `${TMDB_IMAGE_BASE}${item.poster_path}` : '';
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="poster">${poster ? `<img loading="lazy" src="${poster}" alt="${escapeHtml(item.title)} poster">` : `<div style="padding:6px;color:var(--muted);font-size:0.9rem">No image</div>`}</div>
+      <div class="meta">
+        <p class="title">${escapeHtml(item.title)} <span style="font-weight:500; color:var(--muted)">(${item.release_date ? item.release_date.slice(0,4) : '—'})</span></p>
+        <div class="sub">${escapeHtml(item.overview ? item.overview.slice(0,140) : 'No description')}</div>
+        <div class="actions">
+          <button class="btn-primary" onclick="showDetails(${item.id})">View</button>
+          <button class="btn-ghost" onclick="openExternal(${item.id})">Open TMDb</button>
+        </div>
+      </div>
+    `;
+    resultsEl.appendChild(card);
+  }
+}
+
+/* DETAILS */
+async function showDetails(id) {
+  detailsEl.innerHTML = `<div class="placeholder">Loading details...</div>`;
+  const url = `${TMDB_BASE}/movie/${id}?api_key=${encodeURIComponent(TMDB_API_KEY)}&append_to_response=credits,similar`;
+  try {
+    const data = await safeFetch(url);
+    renderDetails(data);
+    // scroll details into view on small screens
+    detailsEl.scrollIntoView({behavior:'smooth', block:'center'});
+  } catch (err) {
+    console.error(err);
+    showError(detailsEl, err.message || 'Failed to fetch movie details.');
+  }
+}
+
+function renderDetails(m) {
+  const poster = m.poster_path ? `${TMDB_IMAGE_BASE}${m.poster_path}` : '';
+  const genres = (m.genres || []).map(g => g.name).join(', ');
+  const runtime = m.runtime ? `${m.runtime} min` : '—';
+  const rating = m.vote_average ? `${m.vote_average}/10` : '—';
+  const director = (m.credits && m.credits.crew) ? (m.credits.crew.find(c => c.job === 'Director') || {}).name : '';
+  const cast = (m.credits && m.credits.cast) ? m.credits.cast.slice(0,6).map(c=>c.name).join(', ') : '';
+  const similar = (m.similar && m.similar.results && m.similar.results.length) ? m.similar.results.slice(0,5).map(s=>s.title).join(', ') : 'No suggestions';
+
+  detailsEl.innerHTML = `
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      ${poster ? `<img src="${poster}" alt="${escapeHtml(m.title)} poster" style="width:140px;border-radius:8px;object-fit:cover">` : `<div style="width:140px;height:210px;background:#081426;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted)">No image</div>`}
+      <div style="flex:1">
+        <h2>${escapeHtml(m.title)} <span style="font-weight:500;color:var(--muted);font-size:0.9rem">(${m.release_date ? m.release_date.slice(0,4): '—'})</span></h2>
+        <div style="color:var(--muted);margin-top:6px;font-size:0.95rem">${escapeHtml(m.tagline || '')}</div>
+        <div class="overview">${escapeHtml(m.overview || 'No overview available.')}</div>
+
+        <div style="margin-top:10px; color:var(--muted); font-size:0.9rem;">
+          <div><strong>Genres:</strong> ${escapeHtml(genres || '—')}</div>
+          <div><strong>Runtime:</strong> ${escapeHtml(runtime)}</div>
+          <div><strong>Rating:</strong> ${escapeHtml(rating)}</div>
+          <div><strong>Director:</strong> ${escapeHtml(director || '—')}</div>
+          <div><strong>Top cast:</strong> ${escapeHtml(cast || '—')}</div>
+          <div><strong>Similar:</strong> ${escapeHtml(similar)}</div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <button class="btn-primary" onclick="openExternal(${m.id})">Open on TMDb</button>
+          <button class="btn-ghost" onclick="shareMovie(${m.id}, '${escapeAttr(m.title)}')">Share</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* OPEN EXTERNAL (TMDb page) */
+function openExternal(id) {
+  const url = `https://www.themoviedb.org/movie/${id}`;
+  window.open(url,'_blank');
+}
+
+/* RANDOM MOVIE - choose a random page from discover/trending */
+randomBtn.addEventListener('click', async () => {
+  resultsEl.innerHTML = `<div class="placeholder">Finding a random popular movie...</div>`;
+  detailsEl.innerHTML = `<div class="placeholder">Select the random result to see details.</div>`;
+
+  try {
+    // get popular movies page 1 to know total pages
+    const popularUrl = `${TMDB_BASE}/movie/popular?api_key=${encodeURIComponent(TMDB_API_KEY)}&page=1`;
+    const popData = await safeFetch(popularUrl);
+    const totalPages = Math.min(popData.total_pages || 1, 500); // TMDb caps at 500 pages for discover
+    const randPage = Math.max(1, Math.floor(Math.random() * totalPages) + 1);
+    const pageUrl = `${TMDB_BASE}/movie/popular?api_key=${encodeURIComponent(TMDB_API_KEY)}&page=${randP
+n
