@@ -1,0 +1,145 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fresher's Party Invitation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#170f22; /* deep purple */
+      --bg2:#2a1b3d; /* plum */
+      --gold:#d4af37; /* metallic gold */
+      --rose:#ff2f92; /* magenta crowd */
+      --paper: rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji','Segoe UI Emoji', 'Segoe UI Symbol';
+      background: radial-gradient(1200px 800px at 70% -10%, #3b285b 0%, transparent 60%),
+                  radial-gradient(900px 600px at -10% 0%, #28193f 0%, transparent 60%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      color:#fff;
+      display:flex;align-items:center;justify-content:center;
+      padding:24px;
+      overflow:auto;
+    }/* gold sparkle at the top */
+.sparkles{
+  position:fixed; inset:0 0 auto 0; height:180px; pointer-events:none;
+  background:
+    radial-gradient(circle at 10% 30%, rgba(212,175,55,.35) 0 2px, transparent 3px) 0 0/60px 60px,
+    radial-gradient(circle at 60% 20%, rgba(212,175,55,.5) 0 2px, transparent 3px) 0 0/80px 80px,
+    radial-gradient(circle at 90% 50%, rgba(212,175,55,.25) 0 2px, transparent 3px) 0 0/70px 70px;
+  box-shadow: inset 0 -60px 100px -40px rgba(0,0,0,.6);
+}
+
+.card{
+  width:min(780px, 96vw);
+  background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.55));
+  border-radius:28px; padding:40px 32px 28px; position:relative;
+  box-shadow: 0 20px 70px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.06);
+  overflow:hidden;
+}
+
+/* hanging disco balls */
+.balls{position:absolute; right:28px; top:12px; display:flex; gap:18px; align-items:flex-start}
+.string{width:2px; height:64px; background:linear-gradient(#b58c24, #e7cd6b); margin:0 auto}
+.ball{width:56px; height:56px; border-radius:50%; position:relative; background:radial-gradient(circle at 30% 30%, #fff7c2 0%, #e0c05a 25%, #a88116 70%, #6f5410 100%); box-shadow:inset 0 0 10px rgba(0,0,0,.5), 0 10px 20px rgba(0,0,0,.35)}
+.ball.small{width:44px; height:44px}
+.tiles{position:absolute; inset:0; background-image: linear-gradient(90deg, rgba(0,0,0,.45) 1px, transparent 1px), linear-gradient(0deg, rgba(0,0,0,.45) 1px, transparent 1px); background-size:10px 10px; border-radius:50%; mix-blend-mode:multiply; opacity:.65}
+
+.head{ text-align:center; margin-top:18px;}
+.head .kicker{font-family:'Playfair Display', serif; color:var(--gold); letter-spacing:.12em; text-transform:lowercase; font-size:1.05rem}
+.title{font-family:'Playfair Display', serif; color:var(--gold); font-weight:800; font-size: clamp(2.4rem, 6vw, 5rem); line-height:1.05; margin:.25rem 0 .35rem}
+.year{font-family:'Playfair Display', serif; color:var(--gold); font-weight:700; font-size: clamp(1.6rem, 4.5vw, 3.2rem); letter-spacing:.05em}
+
+.info{margin:18px auto 10px; text-align:center}
+.line{font-weight:700; letter-spacing:.08em}
+.gold{color:var(--gold)}
+
+.venue{ margin-top:10px; line-height:1.5 }
+
+.chips{display:flex; justify-content:center; gap:10px; margin:16px 0 8px; flex-wrap:wrap}
+.chip{border:1px solid rgba(212,175,55,.5); color:var(--gold); padding:6px 10px; border-radius:999px; font-size:.86rem; backdrop-filter: blur(2px);}
+
+/* DJ + crowd footer silhouette using CSS/SVG */
+.stage{position:relative; margin-top:26px;}
+.crowd{width:100%; height:170px; display:block}
+
+/* helper */
+small.foot{display:block; text-align:center; opacity:.7; margin-top:8px}
+
+@media (max-width:520px){
+  .balls{right:16px}
+  .card{padding:30px 18px 22px}
+}
+
+  </style>
+</head>
+<body>
+  <div class="sparkles" aria-hidden="true"></div>  <main class="card" role="article" aria-label="Fresher's Party Invitation">
+    <div class="balls" aria-hidden="true">
+      <div>
+        <div class="string"></div>
+        <div class="ball">
+          <div class="tiles"></div>
+        </div>
+      </div>
+      <div>
+        <div class="string" style="height:72px"></div>
+        <div class="ball small">
+          <div class="tiles"></div>
+        </div>
+      </div>
+    </div><header class="head">
+  <div class="kicker">please join us for a</div>
+  <h1 class="title">FRESHER PARTY</h1>
+  <div class="year">2026</div>
+</header>
+
+<section class="info">
+  <div class="line gold" style="margin-top:8px; font-size:1.15rem">SUNDAY, AUGUST</div>
+  <div class="line" style="margin-top:4px">ENTRY PASSES OPEN AT <span class="gold">8 AM</span></div>
+  <div class="venue" style="margin-top:10px">
+    <div class="line">GOVERNMENT POLYTECHNIC,</div>
+    <div class="line">VADNAGAR COLLEGE</div>
+    <div class="line" style="margin-top:6px">TIME: <span class="gold">8:00 AM – 8:00 PM</span></div>
+    <div class="line" style="margin-top:6px">INVITED BY: <span class="gold">SANJAY PATEL, HOD</span></div>
+  </div>
+
+  <div class="chips">
+    <div class="chip">Lunch</div>
+    <div class="chip">Dinner</div>
+    <div class="chip">Dance Party</div>
+  </div>
+</section>
+
+<section class="stage" aria-hidden="true">
+  <!-- music notes overlay -->
+  <svg class="crowd" viewBox="0 0 1200 260" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="gradRose" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--rose)"/>
+        <stop offset="100%" stop-color="#5c0a38"/>
+      </linearGradient>
+      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="-2" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/>
+      </filter>
+    </defs>
+    <!-- Crowd silhouette -->
+    <path d="M0,210 C40,180 80,180 120,210 S200,240 260,210 360,190 420,215 520,245 580,220 660,190 740,215 820,245 900,220 980,195 1060,215 1130,245 1200,220 L1200,260 L0,260 Z" fill="url(#gradRose)" filter="url(#shadow)"/>
+    <!-- DJ table simple block -->
+    <rect x="460" y="160" width="280" height="26" rx="6" fill="#1b0f26" stroke="#2d1a3b"/>
+    <circle cx="520" cy="173" r="22" fill="#0c0712" stroke="#2d1a3b"/>
+    <circle cx="680" cy="173" r="22" fill="#0c0712" stroke="#2d1a3b"/>
+  </svg>
+</section>
+
+<small class="foot">Show this card at the gate. Free entry for enrolled students.</small>
+
+  </main>
+</body>
+</html>
